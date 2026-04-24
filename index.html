@@ -329,9 +329,10 @@
     </div>
 
     <script>
-        const API_BASE = window.location.protocol.startsWith('http')
-            ? `${window.location.origin}/api`
-            : 'http://localhost:8000/api';
+        const CLOUD_RUN_API_BASE = 'https://ai-powered-supply-chain-copilot-473731334420.us-central1.run.app/api';
+        const API_BASE = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+            ? 'http://localhost:8000/api'
+            : CLOUD_RUN_API_BASE;
         const RUNTIME_CONFIG_STORAGE_KEY = 'agentic_copilot_runtime_config_v1';
 
         function loadBrowserRuntimeConfig() {
