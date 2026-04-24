@@ -4,6 +4,10 @@ An AI-powered agent that monitors Indian logistics news, checks it against your 
 
 It also includes a browser-based runtime manager at `/manager` so you can update key environment values from any device, including your phone.
 
+The bundled static pages are configured to call the deployed Cloud Run API at:
+
+- `https://ai-powered-supply-chain-copilot-473731334420.us-central1.run.app/api`
+
 ## What This Project Does
 
 The copilot runs in a loop:
@@ -137,6 +141,8 @@ python src/main.py --mode scheduler
 - `GET /api/runtime-config` - read the live runtime values used by the app
 - `PUT /api/runtime-config` - update the live runtime values from the manager page
 - `GET /manager` - open the runtime manager UI
+
+When hosted on Vercel at `https://ai-powered-supply-chain-copilot.vercel.app/`, the frontend calls the Cloud Run backend directly. The FastAPI app allows that Vercel origin through CORS.
 
 ## How the Agent Thinks
 
