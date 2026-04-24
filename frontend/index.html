@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic AI Supply Chain Copilot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 6px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .risk-high {
+            border-left: 4px solid var(--danger);
+        }
+
+        .risk-medium {
+            border-left: 4px solid var(--warning);
+        }
+
+        .risk-low {
+            border-left: 4px solid var(--success);
+        }
+
+        .risk-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .risk-high .risk-badge { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .risk-medium .risk-badge { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .risk-low .risk-badge { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+
+        .news-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .news-content {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 16px;
+            white-space: pre-wrap;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .action-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .action-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .reasoning {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 6px;
+            padding: 12px;
+            margin: 12px 0;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .loader {
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .config-section {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .helper-text {
+            margin-top: 8px;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        .save-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .stakeholder-card {
+            margin-bottom: 20px;
+        }
+
+        .directory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .directory-count {
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(59, 130, 246, 0.16);
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .directory-table-wrap {
+            overflow-x: auto;
+            margin-top: 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .directory-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .directory-table th,
+        .directory-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .directory-table th {
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .directory-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .directory-empty {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            padding: 12px;
+        }
+
+        .approval-result {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Custom styling for SweetAlert to match the app theme */
+        .swal2-popup.custom-swal-popup {
+            background: var(--bg-card) !important;
+            color: var(--text-primary) !important;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .swal2-title.custom-swal-title {
+            color: var(--text-primary) !important;
+            font-size: 1.5rem !important;
+            font-weight: 600 !important;
+        }
+
+        /* Visual Hierarchy for Stakeholder Data */
+        .swal-msg-container {
+            text-align: left;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .swal-label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .swal-value {
+            display: block;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .swal-message-box {
+            background: var(--bg-dark);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--accent);
+            white-space: pre-wrap;
+        }
+
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.92;
+        }
+
+        .btn-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-right: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-top-color: currentColor;
+            border-radius: 50%;
+            vertical-align: -2px;
+            animation: spin 0.8s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Agentic AI Supply Chain Copilot</h1>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span id="status-text">Agent Running</span>
+            </div>
+        </header>
+
+        <div class="grid">
+            <main>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-news">0</div>
+                        <div class="stat-label">News Analyzed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="high-risk">0</div>
+                        <div class="stat-label">High Risk Alerts</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Risk Assessments</div>
+                        <button class="btn-primary" onclick="runCycle()">Run Agent Cycle</button>
+                    </div>
+                    <div id="assessments-container">
+                        <div class="loader"><div class="spinner"></div></div>
+                    </div>
+                </div>
+
+                <div class="card config-section">
+                    <div class="card-header">
+                        <div class="card-title">Business Configuration</div>
+                    </div>
+                    <div id="config-container">
+                        <div class="form-group">
+                            <label>Business Name</label>
+                            <input type="text" id="business-name" value="Loading...">
+                        </div>
+                        <div class="form-group">
+                            <label>Commodity</label>
+                            <input type="text" id="commodity" value="Loading...">
+                        </div>
+                        <div class="form-group">
+                            <label>Region</label>
+                            <input type="text" id="region" value="Loading...">
+                        </div>
+                        <div class="form-group">
+                            <label>Business Rules</label>
+                            <textarea id="rules-textarea" rows="6" placeholder="Enter one rule per line"></textarea>
+                            <div class="helper-text">Type one rule per line. These rules are saved back to the backend config.</div>
+                        </div>
+                        <div class="save-row">
+                            <button class="btn-primary" onclick="saveConfig()">Save Business Profile</button>
+                            <button class="btn-secondary" onclick="reloadConfig()">Reload</button>
+                        </div>
+                        <div class="helper-text" id="save-status"></div>
+                    </div>
+                </div>
+            </main>
+
+            <aside>
+                <div class="card stakeholder-card">
+                    <div class="directory-header">
+                        <div class="card-title">Stakeholder Directory</div>
+                        <div class="directory-count" id="stakeholder-count">0 stakeholders</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="stakeholder-name" placeholder="Person or business name">
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp Number</label>
+                        <input type="text" id="stakeholder-whatsapp" placeholder="+91...">
+                    </div>
+                    <div class="form-group">
+                        <label>Shop Location</label>
+                        <input type="text" id="stakeholder-location" placeholder="City or area">
+                    </div>
+                    <div class="form-group">
+                        <label>Materials or Service</label>
+                        <input type="text" id="stakeholder-materials" placeholder="Rice, packaging, transport, etc.">
+                    </div>
+                    <div class="save-row">
+                        <button class="btn-primary" onclick="saveStakeholder()">Save Stakeholder</button>
+                        <button class="btn-secondary" onclick="clearStakeholderForm()">Clear</button>
+                    </div>
+                    <div class="helper-text" id="stakeholder-status">Saved entries appear in the table below.</div>
+                    <div class="directory-table-wrap">
+                        <table class="directory-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>WhatsApp</th>
+                                    <th>Location</th>
+                                    <th>Materials / Service</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stakeholder-table-body">
+                                <tr>
+                                    <td colspan="4" class="directory-empty">No stakeholders saved yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Agent Status</div>
+                    <p style="color: var(--text-secondary); margin-top: 16px; font-size: 0.875rem;">
+                        The agentic AI copilot runs every 15 minutes to:
+                    </p>
+                    <ul style="color: var(--text-secondary); margin-top: 12px; padding-left: 20px; font-size: 0.875rem;">
+                        <li>Scrape ITLN logistics news</li>
+                        <li>Analyze risks using Gemma</li>
+                        <li>Store insights in local memory</li>
+                        <li>Propose actionable solutions</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        const CLOUD_RUN_API_BASE = 'https://ai-powered-supply-chain-copilot-473731334420.us-central1.run.app/api';
+        const API_BASE = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+            ? '/api'
+            : CLOUD_RUN_API_BASE;
+        const STAKEHOLDER_STORAGE_KEY = 'stakeholder_directory_v1';
+        const RUNTIME_CONFIG_STORAGE_KEY = 'agentic_copilot_runtime_config_v1';
+        let currentConfig = null;
+        let currentAssessments = [];
+        let stakeholderDirectory = [];
+        let runtimeConfigRestorePromise = null;
+
+        function loadBrowserRuntimeConfig() {
+            try {
+                const raw = localStorage.getItem(RUNTIME_CONFIG_STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : null;
+                return parsed && typeof parsed === 'object' ? parsed : null;
+            } catch (error) {
+                console.warn('Unable to load browser runtime config:', error);
+                return null;
+            }
+        }
+
+        function saveBrowserRuntimeConfig(data) {
+            try {
+                localStorage.setItem(RUNTIME_CONFIG_STORAGE_KEY, JSON.stringify({
+                    hf_api_key: data.hf_api_key || '',
+                    hf_model: data.hf_model || '',
+                    scrape_interval_minutes: data.scrape_interval_minutes ?? 1,
+                    target_urls: data.target_urls || [],
+                    log_level: data.log_level || 'INFO',
+                    debug: Boolean(data.debug)
+                }));
+            } catch (error) {
+                console.warn('Unable to save browser runtime config:', error);
+            }
+        }
+
+        async function restoreRuntimeConfigFromBrowser() {
+            const cachedConfig = loadBrowserRuntimeConfig();
+            if (!cachedConfig || !cachedConfig.hf_api_key) {
+                return null;
+            }
+
+            const response = await fetch(`${API_BASE}/runtime-config`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cachedConfig)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Runtime config restore failed with status ${response.status}`);
+            }
+
+            const restoredConfig = await response.json();
+            saveBrowserRuntimeConfig(restoredConfig);
+            return restoredConfig;
+        }
+
+        function ensureRuntimeConfigRestored() {
+            if (!runtimeConfigRestorePromise) {
+                runtimeConfigRestorePromise = restoreRuntimeConfigFromBrowser().catch(error => {
+                    console.warn('Runtime config restore skipped:', error);
+                    return null;
+                });
+            }
+
+            return runtimeConfigRestorePromise;
+        }
+
+        function loadStakeholderDirectory() {
+            try {
+                const raw = localStorage.getItem(STAKEHOLDER_STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                stakeholderDirectory = Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                console.warn('Unable to load stakeholder directory:', error);
+                stakeholderDirectory = [];
+            }
+        }
+
+        function persistStakeholderDirectory() {
+            try {
+                localStorage.setItem(STAKEHOLDER_STORAGE_KEY, JSON.stringify(stakeholderDirectory));
+            } catch (error) {
+                console.warn('Unable to persist stakeholder directory:', error);
+            }
+        }
+
+        function getStakeholders() {
+            return [...stakeholderDirectory];
+        }
+
+        function showModal(options) {
+            return Swal.fire({
+                background: '#1e293b',
+                color: '#f1f5f9',
+                confirmButtonColor: '#3b82f6',
+                cancelButtonColor: '#475569',
+                focusConfirm: false,
+                ...options
+            });
+        }
+
+        function showClipboardToast(message) {
+            if (typeof Toastify !== 'function') {
+                return;
+            }
+
+            Toastify({
+                text: message,
+                duration: 2500,
+                gravity: 'top',
+                position: 'right',
+                stopOnFocus: true,
+                style: {
+                    background: '#1e293b',
+                    color: '#f1f5f9',
+                    border: '1px solid #334155',
+                    borderRadius: '10px',
+                    boxShadow: '0 12px 30px rgba(15, 23, 42, 0.35)'
+                }
+            }).showToast();
+        }
+
+        function showError(message, title = 'Error') {
+            return showModal({
+                icon: 'error',
+                title,
+                text: message
+            });
+        }
+
+        function showSuccess(message, title = 'Success') {
+            return showModal({
+                icon: 'success',
+                title,
+                text: message
+            });
+        }
+
+        function showInfo(message, title = 'Info') {
+            return showModal({
+                icon: 'info',
+                title,
+                text: message
+            });
+        }
+
+        function clearStakeholderForm() {
+            document.getElementById('stakeholder-name').value = '';
+            document.getElementById('stakeholder-whatsapp').value = '';
+            document.getElementById('stakeholder-location').value = '';
+            document.getElementById('stakeholder-materials').value = '';
+            document.getElementById('stakeholder-status').innerText = 'Saved entries appear in the table below.';
+        }
+
+        function saveStakeholder() {
+            const name = document.getElementById('stakeholder-name').value.trim();
+            const whatsappNumber = document.getElementById('stakeholder-whatsapp').value.trim();
+            const shopLocation = document.getElementById('stakeholder-location').value.trim();
+            const materialsOrService = document.getElementById('stakeholder-materials').value.trim();
+
+            if (!name || !whatsappNumber || !shopLocation || !materialsOrService) {
+                showError('Please fill in the stakeholder name, WhatsApp number, location, and materials/service before saving.', 'Missing fields');
+                return;
+            }
+
+            stakeholderDirectory.push({
+                name,
+                whatsapp_number: whatsappNumber,
+                shop_location: shopLocation,
+                materials_or_service: materialsOrService
+            });
+
+            persistStakeholderDirectory();
+            renderStakeholderDirectory();
+            clearStakeholderForm();
+            document.getElementById('stakeholder-status').innerText = 'Stakeholder saved successfully.';
+            showSuccess('Stakeholder saved successfully.');
+        }
+
+        function renderStakeholderDirectory() {
+            const tbody = document.getElementById('stakeholder-table-body');
+            const count = document.getElementById('stakeholder-count');
+
+            count.innerText = `${stakeholderDirectory.length} stakeholder${stakeholderDirectory.length === 1 ? '' : 's'}`;
+
+            if (!stakeholderDirectory.length) {
+                tbody.innerHTML = '<tr><td colspan="4" class="directory-empty">No stakeholders saved yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = stakeholderDirectory.map(stakeholder => `
+                <tr>
+                    <td>${escapeHtml(stakeholder.name)}</td>
+                    <td>${escapeHtml(stakeholder.whatsapp_number)}</td>
+                    <td>${escapeHtml(stakeholder.shop_location)}</td>
+                    <td>${escapeHtml(stakeholder.materials_or_service)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function normalizeAssessments(assessments) {
+            return (assessments || []).map(assessment => ({
+                ...assessment,
+                ui_status: assessment.ui_status || 'pending'
+            }));
+        }
+
+        async function fetchAssessments() {
+            try {
+                const response = await fetch(`${API_BASE}/assessments?limit=10`);
+                const data = await response.json();
+                renderAssessments(data);
+            } catch (error) {
+                console.error('Error fetching assessments:', error);
+            }
+        }
+
+        async function runCycle() {
+            const btn = document.querySelector('button[onclick="runCycle()"]');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Running...';
+
+            try {
+                await ensureRuntimeConfigRestored();
+                const response = await fetch(`${API_BASE}/run-cycle`, { method: 'POST' });
+                if (!response.ok) {
+                    const errorPayload = await response.json().catch(() => null);
+                    throw new Error(errorPayload?.detail || `Run failed with status ${response.status}`);
+                }
+                const data = await response.json();
+                showSuccess(`Cycle complete! ${data.assessments_count} assessments generated.`, 'Agent cycle complete');
+                renderAssessments(data.assessments || []);
+            } catch (error) {
+                console.error('Error running cycle:', error);
+                showError(error.message, 'Error running cycle');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
+        function reviewAssessment(newsUrl) {
+            if (!newsUrl) {
+                showInfo('No source article link is available for this assessment.', 'Review unavailable');
+                return;
+            }
+
+            window.open(newsUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        function setAssessmentDecision(newsId, decision) {
+            currentAssessments = currentAssessments.map(assessment => (
+                assessment.news_id === newsId
+                    ? { ...assessment, ui_status: decision }
+                    : assessment
+            ));
+            renderAssessments(currentAssessments);
+        }
+
+        function setButtonLoading(button, isLoading, loadingText = 'Approving...') {
+            if (!button) {
+                return;
+            }
+
+            if (isLoading) {
+                button.dataset.originalHtml = button.innerHTML;
+                button.classList.add('btn-loading');
+                button.disabled = true;
+                button.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span>${escapeHtml(loadingText)}`;
+                return;
+            }
+
+            const originalHtml = button.dataset.originalHtml;
+            if (originalHtml) {
+                button.innerHTML = originalHtml;
+                delete button.dataset.originalHtml;
+            }
+            button.classList.remove('btn-loading');
+            button.disabled = false;
+        }
+
+        async function approveAssessment(event, newsId) {
+            const button = event?.currentTarget || event?.target || null;
+            const stakeholders = getStakeholders();
+
+            if (!stakeholders.length) {
+                showInfo('Please save at least one stakeholder in the Stakeholder Directory before approving.', 'Stakeholder directory empty');
+                return;
+            }
+
+            setButtonLoading(button, true);
+
+            try {
+                await ensureRuntimeConfigRestored();
+                const response = await fetch(`${API_BASE}/assessments/${encodeURIComponent(newsId)}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ stakeholders })
+                });
+
+                if (!response.ok) {
+                    const errorPayload = await response.json().catch(() => null);
+                    throw new Error(errorPayload?.detail || `Approval failed with status ${response.status}`);
+                }
+
+                const decision = await response.json();
+                currentAssessments = currentAssessments.map(assessment => (
+                    assessment.news_id === newsId
+                        ? { ...assessment, ui_status: 'approved', approval_result: decision }
+                        : assessment
+                ));
+                renderAssessments(currentAssessments);
+                setButtonLoading(button, false);
+
+                const hasStakeholder = Boolean(decision.should_message && decision.selected_stakeholder);
+                const popupHtml = hasStakeholder
+                    ? `
+                        <div class="swal-msg-container">
+                            <span class="swal-label">Selected stakeholder</span>
+                            <span class="swal-value">${escapeHtml(decision.selected_stakeholder.name)}</span>
+
+                            <span class="swal-label">WhatsApp number</span>
+                            <span class="swal-value">${escapeHtml(decision.selected_stakeholder.whatsapp_number)}</span>
+
+                            <span class="swal-label">Shop location</span>
+                            <span class="swal-value">${escapeHtml(decision.selected_stakeholder.shop_location)}</span>
+
+                            <span class="swal-label">Materials / service</span>
+                            <span class="swal-value">${escapeHtml(decision.selected_stakeholder.materials_or_service)}</span>
+
+                            <span class="swal-label">Suggested message</span>
+                            <div class="swal-message-box">${escapeHtml(decision.message_to_send || 'No message provided.')}</div>
+                        </div>
+                    `
+                    : `
+                        <div class="swal-msg-container">
+                            <span class="swal-label">Approval result</span>
+                            <span class="swal-value">No stakeholder message recommended</span>
+                            <div class="swal-message-box">${escapeHtml(decision.reasoning)}</div>
+                        </div>
+                    `;
+
+                await Swal.fire({
+                    title: 'Approval Complete',
+                    html: popupHtml,
+                    icon: 'success',
+                    background: '#1e293b',
+                    color: '#f1f5f9',
+                    confirmButtonText: hasStakeholder ? 'Copy & Close' : 'Close',
+                    showCancelButton: false,
+                    allowOutsideClick: false,
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        title: 'custom-swal-title'
+                    },
+                    didOpen: () => {
+                        const confirmButton = Swal.getConfirmButton();
+                        if (confirmButton) {
+                            confirmButton.style.boxShadow = '0 8px 20px rgba(59, 130, 246, 0.25)';
+                        }
+                    },
+                    preConfirm: async () => {
+                        if (!hasStakeholder || !decision.message_to_send) {
+                            return decision;
+                        }
+
+                        try {
+                            await navigator.clipboard.writeText(decision.message_to_send);
+                            showClipboardToast('Draft copied to clipboard');
+                            return decision;
+                        } catch (copyError) {
+                            Swal.showValidationMessage('Could not copy the draft message to clipboard.');
+                            throw copyError;
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error approving assessment:', error);
+                showError(error.message, 'Approval failed');
+            } finally {
+                setButtonLoading(button, false);
+            }
+        }
+
+        function renderAssessments(assessments) {
+            const container = document.getElementById('assessments-container');
+            currentAssessments = normalizeAssessments(assessments || []);
+            const sortedAssessments = sortAssessments(currentAssessments);
+
+            if (!sortedAssessments || sortedAssessments.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 40px;">No assessments yet. Run an agent cycle to analyze news.</div>';
+                return;
+            }
+
+            container.innerHTML = sortedAssessments.map(assessment => `
+                <div class="action-item risk-${assessment.risk_level.toLowerCase()}">
+                    <div class="news-title">${escapeHtml(assessment.news_title || 'Risk Assessment')}</div>
+                    <div class="news-content">${escapeHtml(assessment.reasoning)}</div>
+                    ${assessment.proposed_action ? `
+                        <div class="reasoning"><strong>Proposed Action:</strong> ${escapeHtml(assessment.proposed_action)}</div>
+                    ` : ''}
+                    <div class="news-meta">
+                        <span>Confidence: ${(assessment.confidence * 100).toFixed(0)}%</span>
+                        <span class="risk-badge risk-${assessment.risk_level.toLowerCase()}">${assessment.risk_level} Risk</span>
+                    </div>
+                    ${assessment.approval_result ? `
+                        <div class="approval-result">
+                            <strong>Gemma Approval:</strong> ${escapeHtml(assessment.approval_result.reasoning)}
+                            ${assessment.approval_result.should_message && assessment.approval_result.selected_stakeholder ? `
+                                <div style="margin-top: 8px;">
+                                    <strong>Selected stakeholder:</strong> ${escapeHtml(assessment.approval_result.selected_stakeholder.name)}<br>
+                                    <strong>WhatsApp:</strong> ${escapeHtml(assessment.approval_result.selected_stakeholder.whatsapp_number)}
+                                </div>
+                            ` : `
+                                <div style="margin-top: 8px;"><strong>No stakeholder message recommended.</strong></div>
+                            `}
+                        </div>
+                    ` : ''}
+                    <div class="action-buttons">
+                        ${assessment.risk_level === 'Low' || assessment.ui_status !== 'pending' ? '' : `
+                            <button class="btn-primary" onclick='approveAssessment(event, ${JSON.stringify(assessment.news_id)})'>Approve</button>
+                        `}
+                        <button class="btn-secondary" onclick='reviewAssessment(${JSON.stringify(assessment.news_url || '')})'>Review</button>
+                        ${assessment.risk_level === 'Low' || assessment.ui_status !== 'pending' ? '' : `
+                            <button class="btn-danger" onclick='setAssessmentDecision(${JSON.stringify(assessment.news_id)}, "discarded")'>Discard</button>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('total-news').innerText = sortedAssessments.length;
+            const highRiskCount = sortedAssessments.filter(a => a.risk_level === 'High').length;
+            document.getElementById('high-risk').innerText = highRiskCount;
+        }
+
+        function sortAssessments(assessments) {
+            const riskRank = { High: 0, Medium: 1, Low: 2 };
+
+            return [...assessments].sort((a, b) => {
+                const riskDiff = (riskRank[a.risk_level] ?? 3) - (riskRank[b.risk_level] ?? 3);
+                if (riskDiff !== 0) {
+                    return riskDiff;
+                }
+
+                const confidenceDiff = (b.confidence ?? 0) - (a.confidence ?? 0);
+                if (confidenceDiff !== 0) {
+                    return confidenceDiff;
+                }
+
+                return 0;
+            });
+        }
+
+        async function fetchConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/config`);
+                const config = await response.json();
+                currentConfig = config;
+                document.getElementById('business-name').value = config.business_name;
+                document.getElementById('commodity').value = config.commodity;
+                document.getElementById('region').value = config.region;
+                document.getElementById('rules-textarea').value = (config.rules || []).join('\n');
+                document.getElementById('save-status').innerText = '';
+            } catch (error) {
+                console.error('Error fetching config:', error);
+                document.getElementById('save-status').innerText = 'Unable to load business profile.';
+            }
+        }
+
+        async function saveConfig() {
+            const rules = document.getElementById('rules-textarea').value
+                .split('\n')
+                .map(rule => rule.trim())
+                .filter(Boolean);
+
+            const payload = {
+                business_name: document.getElementById('business-name').value.trim(),
+                commodity: document.getElementById('commodity').value.trim(),
+                region: document.getElementById('region').value.trim(),
+                rules,
+                created_at: currentConfig?.created_at || new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/config`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Save failed with status ${response.status}`);
+                }
+
+                currentConfig = await response.json();
+                document.getElementById('save-status').innerText = 'Business profile saved.';
+                showSuccess('Business profile saved.');
+            } catch (error) {
+                console.error('Error saving config:', error);
+                document.getElementById('save-status').innerText = 'Failed to save business profile.';
+                showError(error.message, 'Save failed');
+            }
+        }
+
+        async function reloadConfig() {
+            await fetchConfig();
+        }
+
+        loadStakeholderDirectory();
+        renderStakeholderDirectory();
+        ensureRuntimeConfigRestored();
+        fetchAssessments();
+        fetchConfig();
+    </script>
+</body>
+</html>
