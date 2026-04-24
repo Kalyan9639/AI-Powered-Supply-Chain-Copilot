@@ -1,0 +1,18 @@
+[project]
+name = "agentic-ai-supply-chain-copilot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "chromadb>=1.5.8",
+    "crawl4ai>=0.8.6",
+    "fastapi>=0.136.0",
+    "huggingface-hub>=1.11.0",
+    "pydantic>=2.13.3",
+    "pydantic-settings>=2.14.0",
+    "python-dotenv>=1.2.2",
+    "playwright==1.54.0",
+    "sentence-transformers>=5.4.1",
+    "uvicorn>=0.46.0",
+]

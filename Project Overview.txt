@@ -1,0 +1,119 @@
+*Detailed Project Description – Agentic AI Supply-Chain Copilot for Indian Agri & Retail*
+
+### *1. What is this project in 1 line?*
+An AI assistant that watches news, weather, and strikes 24/7 like a human manager, thinks about risks to your business, and automatically takes action to save money and prevent losses – while you sleep.
+
+### *2. What problem does it solve?*
+*Main problem for Indian businesses like Undua/farmers/traders:*  
+“You only know about a truck strike, cyclone, or port closure _after_ your goods are already stuck. By then you lose lakhs in spoiled crops, penalties, or emergency transport.”
+
+*This project solves:*  
+1. *Late warnings* → Gives 2-3 weeks early alert instead of 2 hours  
+2. *No action* → Doesn’t just warn. It books new truck, finds new supplier, updates your records automatically  
+3. *Information overload* → Reads 1000 news sources, but tells you only 1 line: “Strike tomorrow. I booked Tata Ace. Loss avoided: ₹1.9L”
+
+### *3. What exactly does the AI do? Simple example*
+You’re a tomato trader in Hyderabad.
+
+*Without this AI:*  
+3 AM: Telangana lorry strike announced.  
+8 AM: You wake up. 2 tons tomatoes at farm, no truck. They rot. Loss ₹2 lakh.
+
+*With this AI:*  
+3:05 AM: AI reads strike news → Checks your Google Sheet → Sees “Order #452: 2 tons tomato to Hyderabad” → Remembers “2023 strike delayed 3 days” → Decides → Books 5 mini-trucks from alternate vendor → WhatsApps farmer “Load by 6 AM” → Updates your Sheet.  
+8 AM: You wake up to message “Strike handled. Extra cost ₹8k. Saved ₹1.92L.”
+
+### *4. Two modes of operation*
+Mode | When it runs | What happens | Who starts it
+**Mode 1: Proactive Agent** | Every 15 min, 24/7 | AI scans news/weather → Thinks → Acts on its own → Sends you WhatsApp only if action taken | Automatic scheduler. No human needed
+**Mode 2: Reactive Chatbot** | When you ask | You: “Will Vizag port close?” → AI searches memory → Answers with source | You type question
+*For JNTUH project*: Mode 1 is the main innovation. Mode 2 is bonus feature.
+
+### *5. How data flows – End to end in simple steps*
+Step 1: WATCH → Every 15 minutes
+Sources: News websites, Govt weather alerts, Social media posts, Port updates, Your Google Sheet orders
+Tool used: Data scrapers / public APIs
+
+Step 2: UNDERSTAND → Convert to AI format  
+New info like "Cyclone near Vizag" is converted to numbers using a free embedding model
+Tool used: Local embedding model that runs on your computer, no internet cost
+
+Step 3: REMEMBER → Save + recall past cases
+Stores new event in local memory database. Also searches: "Did Vizag close last year? What worked?"
+Tool used: Free local vector database on your laptop
+
+Step 4: THINK → Brain makes decision
+Gemma model from Hugging Face gets: 
+1. Your business profile: "I sell tomatoes, Hyderabad, low risk"
+2. New event: "Cyclone Apr 25-27"
+3. Active orders: From your Google Sheet
+4. Past memory: "2023: Shifted to Chennai port, saved loss"
+Gemma replies: "Action: Yes. Reroute Order #452 to Chennai. Reason: ..."
+
+Step 5: ACT → AI uses tools
+Calls real-world functions: Book truck, Send WhatsApp, Update Google Sheet
+Tool used: Free APIs for WhatsApp, transport booking
+
+Step 6: INFORM → You get summary
+WhatsApp: "Cyclone alert. I rerouted your shipment. ETA +2 days. No action needed."
+Google Sheet cell updated: "Agent handled - Rerouted"
+### *6. What makes it "Agentic AI" not just a chatbot?*
+Normal Chatbot | Your Agentic Copilot
+Waits for you to ask | Runs on its own every 15 min
+Only gives text answer | Books truck, sends WhatsApp, edits Sheet
+No memory | Remembers last year’s monsoon solution
+One step | Plans 5 steps: Check → Decide → Book → Inform → Log
+*Agentic = Has agency to act*, like a real employee.
+
+### *7. How does it know MY business?*
+You teach it once on Day 1. Three ways:
+1. *Business Profile File*: You write “I trade tomatoes in Hyderabad. Main suppliers: X, Y. Rule: Never buy above ₹30/kg.” AI reads this every time.
+2. *Google Sheet Tabs*: One tab called `Business_Profile` + `Suppliers` + `Orders`. AI checks this before acting.
+3. *Memory Database*: You add one line: “Ravi Agro Traders main risk is monsoon + Telangana strikes.” AI recalls this during reasoning.
+
+So it won’t suggest buying cement if you sell vegetables.
+
+### *8. Data Sources – Where does info come from?*
+You’ll pull from these types of sources. All have free tiers:
+Type of Data | Why needed | Example sources
+**News & Geopolitics** | Wars, bans, strikes | Public news APIs, Govt press releases
+**Weather Alerts** | Cyclone, flood, heatwave | National weather dept APIs, free weather APIs
+**Social Media Chatter** | Early strike rumors | Public social media APIs, free scraping tools
+**Logistics Updates** | Port closure, highway block | Port authority websites, Maps traffic APIs
+**Govt Rules** | Export bans, new taxes | Govt trade websites, Agri market APIs
+**Your Business Data** | What orders to protect | Your Google Sheet: Orders, Suppliers, Inventory
+*Important*: For ₹0 project, you filter only Indian news + Telugu/Hindi keywords. Keeps data small.
+
+### *9. Technical approach – No brand names except Gemma*
+Component | What we use | Cost
+**Brain** | Gemma model via Hugging Face free API | ₹0
+**Embeddings** | Free local embedding model that runs on CPU | ₹0
+**Long-term Memory** | Free local vector database stored as files | ₹0
+**Scheduler** | Free task scheduler that runs every 15 min | ₹0
+**Data Storage** | Google Sheets for orders/suppliers + local files | ₹0
+**Actions** | Free APIs for WhatsApp, email, transport booking | ₹0
+**Dashboard** | Free web app framework to show decisions | ₹0
+**Hosting** | Free cloud tier or your laptop | ₹0
+*Total cost: ₹0*. Uses only free tiers and local models.
+
+### *10. What it actually solves for Undua/Farmers*
+1. *Crop waste* → Predicts transport failure, books cold storage early
+2. *Price shocks* → Sees import ban news, tells you to buy fertilizer before price jumps  
+3. *Export rejection* → Flags new EU rule, you change packaging before shipping
+4. *No manpower* → One AI replaces 3 jobs: news reader + logistics guy + analyst
+
+### *11. For JNTUH Project Scope – What to build in 2 months*
+1. *Core loop*: Scheduler → News scrape → Gemma reason → Update Google Sheet → WhatsApp alert
+2. *Memory*: Store 100 past disruptions in local vector DB. Show “AI recalled 2023 strike solution”
+3. *Dashboard*: 1 page showing: Map of risks + Last 5 agent actions + Your orders
+4. *Demo case*: “Telangana strike” → Show AI booking trucks automatically
+
+*Viva line*: “Sir, normal software gives alerts. My agent takes action. It runs 24/7 using Gemma + local memory, costs zero, and saved ₹1.9L in simulation.”
+
+*One page summary*:  
+*Input* → News, Weather, Your Google Sheet  
+*Process* → Gemma + Memory + Rules → Decide  
+*Output* → Auto-book truck + WhatsApp you + Update Sheet  
+*Human work* → Zero, unless AI asks “Approve ₹50k order?”
+
+Want me to convert this into a proper SRS document format for your project report?

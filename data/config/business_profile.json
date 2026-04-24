@@ -1,0 +1,11 @@
+{
+  "business_name": "Agritech Solutions",
+  "commodity": "tomatoes",
+  "region": "Hyderabad, Telangana",
+  "rules": [
+    "Never buy transport above ₹30/kg",
+    "I am transporting the commodities only via road",
+    "Alert if crop waste risk is high"
+  ],
+  "created_at": "2026-04-23T00:00:00"
+}

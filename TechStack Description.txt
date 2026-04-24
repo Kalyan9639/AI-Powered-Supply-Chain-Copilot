@@ -1,0 +1,45 @@
+# **Project Overview: Agentic AI Supply-Chain Copilot (MVP Version)**
+
+#### **1. Project Vision**
+[cite_start]An Agentic AI "Manager" that proactively monitors Indian logistics news, assesses risks to a specific agri-retail business, and prepares actionable solutions[cite: 2, 4]. [cite_start]It moves from being a simple chatbot to an agent with "agency"—meaning it doesn't just talk; it plans and prepares actions for the user to approve[cite: 18, 20].
+
+#### **2. Core Technical Stack**
+* **Brain (LLM):** `google/gemma-4-26B-A4B-it` via Hugging Face Hub API.
+* **Orchestration:** Python Functional Loop using **Pydantic** for state validation and data schemas.
+* **Scraping:** **Crawl4AI** (to output clean Markdown) targeting `itln.in/supply-chain` and `itln.in/road-transportation`.
+* [cite_start]**Memory (Vector DB):** **ChromaDB** (Local) for storing news embeddings and historical disruptions[cite: 15, 35].
+* **Embeddings:** `sentence-transformers` (local CPU inference).
+* [cite_start]**Database/Storage:** **Google Sheets API** for active orders/logs and a **local JSON** for the Business Profile[cite: 22, 37].
+* **Frontend:** Modern Dark-Themed Web Dashboard (HTML5, CSS3, Vanilla JS/Tailwind).
+* **Backend:** **FastAPI** to bridge the Python agent logic and the JS frontend.
+
+#### **3. The Agentic Workflow (Pydantic-Managed)**
+1.  [cite_start]**Watch (15-min Loop):** Crawl4AI fetches the latest headlines from ITLN[cite: 15].
+2.  **Filter & Embed:** Text is converted to embeddings; ChromaDB checks if the news is "new" or a duplicate.
+3.  [cite_start]**Analyze (Gemma):** Gemma receives the **Business Profile (JSON)**, **Active Orders (Google Sheets)**, and the **New Incident**[cite: 16].
+    * [cite_start]*Input Example*: "Tomato trader in Hyderabad" + "Lorry strike in Telangana"[cite: 6, 9].
+4.  **Reasoning Path:** Gemma outputs a Pydantic object containing:
+    * `Risk_Level`: (High/Medium/Low)
+    * [cite_start]`Reasoning`: Why this affects the specific user[cite: 16].
+    * [cite_start]`Proposed_Action`: e.g., "Reroute Order #452 to Chennai"[cite: 9, 16].
+5.  **State Management (Human-in-the-loop):**
+    * The proposal is written to a `Pending_Actions` table.
+    * **UI Alert**: User sees a Red/Yellow card.
+    * [cite_start]**Approval**: Once user clicks "Approve," the agent updates the Google Sheet "Status" column to "Rerouted/Handled"[cite: 10, 17].
+
+#### **4. UI Architecture (Glimpse → Details → Action)**
+* **Screen 1: Command Center:** Card-based layout. High-risk alerts at the top. Shows "AI Action" status (e.g., "Monitoring" or "Action Proposed").
+* **Screen 2: Deep Dive:** Displays the Markdown source from Crawl4AI + Gemma’s reasoning. Map visual placeholder for routes.
+* [cite_start]**Screen 3: Business Setup:** Simple HTML form that saves User Name, Commodity (e.g., Tomatoes), and Rules to `config.json`[cite: 21].
+
+#### **5. Business Logic Constraints (JSON Rules)**
+The agent must refer to `config.json` for every decision.
+* [cite_start]*Rule Example*: "Never buy transport above ₹30/kg" or "Prioritize rail over road during monsoon"[cite: 21, 24].
+
+#### **6. Implementation Instructions for Claude Code**
+* **Data Integrity:** Use Pydantic models for `NewsArticle`, `RiskAssessment`, and `UserConfig`.
+* **Async Scraper:** Use `Crawl4AI`'s async capabilities to prevent UI lag.
+* **HF API:** Use `huggingface_hub` library for inference; implement retries for rate limits.
+* **UI Aesthetic:** Apply a dark-mode theme with `Inter` font, subtle border glows for "High Risk" cards, and responsive CSS for mobile/desktop.
+
+---
