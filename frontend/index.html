@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -101,6 +102,12 @@
             margin-bottom: 16px;
             padding-bottom: 16px;
             border-bottom: 1px solid var(--border);
+            /* NEW: Sticky positioning */
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            /* Prevents cards from overlapping text */
+            z-index: 10;
         }
 
         .card-title {
@@ -127,9 +134,20 @@
             font-weight: 500;
         }
 
-        .risk-high .risk-badge { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-        .risk-medium .risk-badge { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-        .risk-low .risk-badge { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .risk-high .risk-badge {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .risk-medium .risk-badge {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .risk-low .risk-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
 
         .news-title {
             font-size: 1.125rem;
@@ -222,6 +240,36 @@
             color: var(--text-primary);
         }
 
+        /* Scrollable container for assessments */
+        #assessments-container {
+            max-height: 600px;
+            /* Adjust this height based on your preference */
+            overflow-y: auto;
+            padding-right: 10px;
+            /* Space for the scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        /* Custom scrollbar for Chrome/Safari/Edge */
+        #assessments-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #assessments-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #assessments-container::-webkit-scrollbar-thumb {
+            background-color: var(--border);
+            border-radius: 20px;
+        }
+
+        /* Ensure cards have a bit of bottom margin for spacing inside the scroll view */
+        .action-item {
+            margin-bottom: 16px;
+        }
+
         .stat-label {
             font-size: 0.875rem;
             color: var(--text-secondary);
@@ -266,7 +314,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .config-section {
@@ -284,7 +334,8 @@
             color: var(--text-secondary);
         }
 
-        input, textarea {
+        input,
+        textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border);
@@ -447,6 +498,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -476,7 +528,9 @@
                         <button class="btn-primary" onclick="runCycle()">Run Agent Cycle</button>
                     </div>
                     <div id="assessments-container">
-                        <div class="loader"><div class="spinner"></div></div>
+                        <div class="loader">
+                            <div class="spinner"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -500,7 +554,8 @@
                         <div class="form-group">
                             <label>Business Rules</label>
                             <textarea id="rules-textarea" rows="6" placeholder="Enter one rule per line"></textarea>
-                            <div class="helper-text">Type one rule per line. These rules are saved back to the backend config.</div>
+                            <div class="helper-text">Type one rule per line. These rules are saved back to the backend
+                                config.</div>
                         </div>
                         <div class="save-row">
                             <button class="btn-primary" onclick="saveConfig()">Save Business Profile</button>
@@ -562,7 +617,8 @@
                     <p style="color: var(--text-secondary); margin-top: 16px; font-size: 0.875rem;">
                         The agentic AI copilot runs every 15 minutes to:
                     </p>
-                    <ul style="color: var(--text-secondary); margin-top: 12px; padding-left: 20px; font-size: 0.875rem;">
+                    <ul
+                        style="color: var(--text-secondary); margin-top: 12px; padding-left: 20px; font-size: 0.875rem;">
                         <li>Scrape ITLN logistics news</li>
                         <li>Analyze risks using Gemma</li>
                         <li>Store insights in local memory</li>
@@ -1103,4 +1159,5 @@
         fetchConfig();
     </script>
 </body>
+
 </html>
