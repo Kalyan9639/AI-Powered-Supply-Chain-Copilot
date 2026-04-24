@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic Copilot | Runtime Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --success: #10b981;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(59, 130, 246, 0.18), transparent 38%),
+                linear-gradient(180deg, #0f172a 0%, #020617 100%);
+            color: var(--text-primary);
+            padding: 24px;
+        }
+
+        .shell {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            color: var(--text-secondary);
+            max-width: 680px;
+            line-height: 1.5;
+        }
+
+        .pill {
+            background: rgba(59, 130, 246, 0.14);
+            border: 1px solid rgba(59, 130, 246, 0.26);
+            color: var(--text-primary);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 0.78rem;
+            white-space: nowrap;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 18px;
+        }
+
+        @media (max-width: 900px) {
+            .grid,
+            .hero {
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 18px 40px rgba(2, 6, 23, 0.35);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid var(--border);
+            background: #0f172a;
+            color: var(--text-primary);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font: inherit;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 170px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: rgba(59, 130, 246, 0.8);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16);
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #0f172a;
+        }
+
+        .checkbox-row input {
+            width: auto;
+            margin: 0;
+            accent-color: var(--accent);
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .status {
+            margin-top: 14px;
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+        }
+
+        .status.success {
+            color: var(--success);
+        }
+
+        .status.error {
+            color: #fca5a5;
+        }
+
+        .summary-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .summary-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .summary-label {
+            color: var(--text-secondary);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            word-break: break-word;
+            line-height: 1.45;
+        }
+
+        .hint {
+            color: var(--text-secondary);
+            font-size: 0.86rem;
+            line-height: 1.55;
+            margin-top: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <div class="hero">
+            <div>
+                <h1>Runtime Manager</h1>
+                <div class="subtitle">
+                    Update deployment settings from your phone. These values are saved into the app's runtime env store and mirrored in this browser so a cold-started backend can be restored before the next cycle.
+                </div>
+            </div>
+            <div class="pill" id="source-pill">Loading current values...</div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="section-title">Environment Variables</div>
+
+                <div class="form-grid">
+                    <div class="field full">
+                        <label for="hf_api_key">Hugging Face API Key</label>
+                        <input id="hf_api_key" type="password" placeholder="hf_...">
+                    </div>
+
+                    <div class="field">
+                        <label for="hf_model">HF Model</label>
+                        <input id="hf_model" type="text" placeholder="google/gemma-4-26B-A4B-it">
+                    </div>
+
+                    <div class="field">
+                        <label for="scrape_interval_minutes">Scrape Interval</label>
+                        <input id="scrape_interval_minutes" type="number" min="1" step="1">
+                    </div>
+
+                    <div class="field">
+                        <label for="log_level">Log Level</label>
+                        <select id="log_level">
+                            <option>DEBUG</option>
+                            <option>INFO</option>
+                            <option>WARNING</option>
+                            <option>ERROR</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>&nbsp;</label>
+                        <div class="checkbox-row">
+                            <input id="debug" type="checkbox">
+                            <label for="debug" style="margin: 0; text-transform: none; letter-spacing: normal; font-size: 0.92rem;">Enable debug mode</label>
+                        </div>
+                    </div>
+
+                    <div class="field full">
+                        <label for="target_urls">Target URLs</label>
+                        <textarea id="target_urls" placeholder="One URL per line"></textarea>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn-primary" onclick="saveConfig()">Save Environment</button>
+                    <button class="btn-secondary" onclick="loadConfig()">Reload Current Values</button>
+                </div>
+
+                <div class="status" id="status">Ready.</div>
+                <div class="hint">
+                    Tip: this page edits the backend runtime env file and keeps a browser copy for Cloud Run cold starts. For team/shared-device deployments, use Secret Manager or another server-side store instead.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="section-title">Current Runtime Snapshot</div>
+                <div class="summary-grid" id="summary"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.protocol.startsWith('http')
+            ? `${window.location.origin}/api`
+            : 'http://localhost:8000/api';
+        const RUNTIME_CONFIG_STORAGE_KEY = 'agentic_copilot_runtime_config_v1';
+
+        function loadBrowserRuntimeConfig() {
+            try {
+                const raw = localStorage.getItem(RUNTIME_CONFIG_STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : null;
+                return parsed && typeof parsed === 'object' ? parsed : null;
+            } catch (error) {
+                console.warn('Unable to load browser runtime config:', error);
+                return null;
+            }
+        }
+
+        function saveBrowserRuntimeConfig(data) {
+            try {
+                localStorage.setItem(RUNTIME_CONFIG_STORAGE_KEY, JSON.stringify({
+                    hf_api_key: data.hf_api_key || '',
+                    hf_model: data.hf_model || '',
+                    scrape_interval_minutes: data.scrape_interval_minutes ?? 1,
+                    target_urls: data.target_urls || [],
+                    log_level: data.log_level || 'INFO',
+                    debug: Boolean(data.debug)
+                }));
+            } catch (error) {
+                console.warn('Unable to save browser runtime config:', error);
+            }
+        }
+
+        async function restoreRuntimeConfigFromBrowser() {
+            const cachedConfig = loadBrowserRuntimeConfig();
+            if (!cachedConfig || !cachedConfig.hf_api_key) {
+                return null;
+            }
+
+            const response = await fetch(`${API_BASE}/runtime-config`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cachedConfig)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Browser restore failed (${response.status})`);
+            }
+
+            const restoredConfig = await response.json();
+            saveBrowserRuntimeConfig(restoredConfig);
+            return restoredConfig;
+        }
+
+        function setStatus(message, kind = '') {
+            const el = document.getElementById('status');
+            el.className = `status ${kind}`.trim();
+            el.innerText = message;
+        }
+
+        function renderSummary(data) {
+            const summary = document.getElementById('summary');
+            const targetUrls = (data.target_urls || []).join('\n');
+            summary.innerHTML = [
+                ['Source', data.source || 'unknown'],
+                ['Runtime file', data.runtime_env_path || 'unknown'],
+                ['HF Model', data.hf_model || ''],
+                ['Scrape Interval', `${data.scrape_interval_minutes ?? ''} minutes`],
+                ['Log Level', data.log_level || ''],
+                ['Debug', data.debug ? 'Enabled' : 'Disabled'],
+                ['Target URLs', targetUrls || 'No target URLs configured']
+            ].map(([label, value]) => `
+                <div class="summary-item">
+                    <div class="summary-label">${label}</div>
+                    <div class="summary-value">${String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+                </div>
+            `).join('');
+        }
+
+        function populateForm(data) {
+            document.getElementById('hf_api_key').value = data.hf_api_key || '';
+            document.getElementById('hf_model').value = data.hf_model || '';
+            document.getElementById('scrape_interval_minutes').value = data.scrape_interval_minutes ?? 1;
+            document.getElementById('target_urls').value = (data.target_urls || []).join('\n');
+            document.getElementById('log_level').value = data.log_level || 'INFO';
+            document.getElementById('debug').checked = Boolean(data.debug);
+            document.getElementById('source-pill').innerText = data.source === 'runtime.env'
+                ? 'Loaded from runtime.env'
+                : 'Loaded from .env fallback';
+        }
+
+        async function loadConfig() {
+            setStatus('Loading current values...');
+
+            try {
+                const response = await fetch(`${API_BASE}/runtime-config`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load runtime config (${response.status})`);
+                }
+
+                const data = await response.json();
+                const browserConfig = loadBrowserRuntimeConfig();
+                if (data.source !== 'runtime.env' && browserConfig?.hf_api_key) {
+                    setStatus('Restoring saved browser values after cold start...');
+                    const restoredData = await restoreRuntimeConfigFromBrowser();
+                    populateForm(restoredData);
+                    renderSummary(restoredData);
+                    setStatus('Browser-saved runtime values restored.', 'success');
+                    return;
+                }
+
+                populateForm(data);
+                renderSummary(data);
+                setStatus('Current runtime values loaded.', 'success');
+            } catch (error) {
+                console.error(error);
+                setStatus(error.message, 'error');
+            }
+        }
+
+        async function saveConfig() {
+            const payload = {
+                hf_api_key: document.getElementById('hf_api_key').value.trim(),
+                hf_model: document.getElementById('hf_model').value.trim(),
+                scrape_interval_minutes: parseInt(document.getElementById('scrape_interval_minutes').value, 10) || 1,
+                target_urls: document.getElementById('target_urls').value
+                    .split('\n')
+                    .map(item => item.trim())
+                    .filter(Boolean),
+                log_level: document.getElementById('log_level').value,
+                debug: document.getElementById('debug').checked
+            };
+
+            setStatus('Saving environment values...');
+
+            try {
+                const response = await fetch(`${API_BASE}/runtime-config`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const payload = await response.json().catch(() => null);
+                    throw new Error(payload?.detail || `Save failed (${response.status})`);
+                }
+
+                const data = await response.json();
+                saveBrowserRuntimeConfig(data);
+                populateForm(data);
+                renderSummary(data);
+                setStatus('Environment values saved.', 'success');
+            } catch (error) {
+                console.error(error);
+                setStatus(error.message, 'error');
+            }
+        }
+
+        loadConfig();
+    </script>
+</body>
+</html>
