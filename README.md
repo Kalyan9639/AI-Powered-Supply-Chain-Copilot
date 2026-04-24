@@ -37,6 +37,7 @@ ITLN news pages
 - `config.json` is also supported as a fallback business profile source.
 - `data/config/runtime.env` stores runtime overrides edited from `manager.html`.
 - `.env` remains the fallback source for local development and first-time setup.
+- The browser also keeps a localStorage copy of runtime settings after you save them in `/manager`, allowing the dashboard to restore a cold-started Cloud Run instance before running a cycle.
 - `data/cache/chromadb` stores the local ChromaDB persistence files.
 - `data/cache` is also used as the local cache base for Crawl4AI.
 
@@ -77,7 +78,7 @@ You can also update these runtime values after the app is running by opening:
 
 - `http://localhost:8000/manager`
 
-The manager page writes the values into `data/config/runtime.env`, and the backend reloads them without requiring a restart.
+The manager page writes the values into `data/config/runtime.env`, and the backend reloads them without requiring a restart. It also mirrors those values in the same browser's localStorage so Cloud Run cold starts can be rehydrated from your phone before a run cycle.
 
 ## Install Dependencies
 
@@ -175,10 +176,11 @@ Gemma returns a structured result:
 
 - The app defaults to the business profile at `data/config/business_profile.json`.
 - Runtime config edits are stored in `data/config/runtime.env` locally, or in the Cloud Run writable storage directory if `APP_STORAGE_DIR` is set.
+- On the deployed dashboard, saved runtime config is also restored from browser localStorage before `POST /api/run-cycle` and approval-time Gemma calls. This avoids setting the Hugging Face key as a Cloud Run environment variable when you use the same browser/device that saved it in `/manager`.
 - Business profile edits from the dashboard are also file-backed, so they follow the same Cloud Run persistence limitations.
 - ChromaDB and Crawl4AI both use the `data/cache` subtree so local state stays inside the project.
 - If Hugging Face requests fail, check that the API key in `.env` is valid and that your account can access the chosen Gemma model.
-- On Cloud Run, the container filesystem is ephemeral. The runtime manager works, but changes are only durable while the instance exists unless you wire the config into a persistent backend such as Firestore or Secret Manager.
+- On Cloud Run, the container filesystem is ephemeral. The runtime manager now recovers runtime env values from the browser that saved them, but server-side durability across devices still requires a persistent backend such as Firestore, Cloud Storage, or Secret Manager.
 - The Docker image ships with Playwright and Chromium so Crawl4AI can scrape pages that require a real browser.
 - For scheduled scraping in Cloud Run, keep the service request-driven and use Cloud Scheduler or a manual call to `POST /api/run-cycle` instead of an always-on background loop.
 
