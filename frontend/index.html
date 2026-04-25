@@ -416,6 +416,24 @@
             padding: 12px;
         }
 
+        .btn-delete-row {
+            background: transparent;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: var(--danger);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+        }
+
+        .btn-delete-row:hover {
+            background: rgba(239, 68, 68, 0.14);
+            border-color: var(--danger);
+            transform: translateY(-1px);
+        }
+
         .approval-result {
             margin-top: 12px;
             padding: 12px;
@@ -601,11 +619,12 @@
                                     <th>WhatsApp</th>
                                     <th>Location</th>
                                     <th>Materials / Service</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody id="stakeholder-table-body">
                                 <tr>
-                                    <td colspan="4" class="directory-empty">No stakeholders saved yet.</td>
+                                    <td colspan="5" class="directory-empty">No stakeholders saved yet.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -818,18 +837,44 @@
             count.innerText = `${stakeholderDirectory.length} stakeholder${stakeholderDirectory.length === 1 ? '' : 's'}`;
 
             if (!stakeholderDirectory.length) {
-                tbody.innerHTML = '<tr><td colspan="4" class="directory-empty">No stakeholders saved yet.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="directory-empty">No stakeholders saved yet.</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = stakeholderDirectory.map(stakeholder => `
+            tbody.innerHTML = stakeholderDirectory.map((stakeholder, index) => `
                 <tr>
                     <td>${escapeHtml(stakeholder.name)}</td>
                     <td>${escapeHtml(stakeholder.whatsapp_number)}</td>
                     <td>${escapeHtml(stakeholder.shop_location)}</td>
                     <td>${escapeHtml(stakeholder.materials_or_service)}</td>
+                    <td style="text-align:center;">
+                        <button class="btn-delete-row" onclick="deleteStakeholder(${index})" title="Remove stakeholder">&#128465;</button>
+                    </td>
                 </tr>
             `).join('');
+        }
+
+        async function deleteStakeholder(index) {
+            const stakeholder = stakeholderDirectory[index];
+            if (!stakeholder) return;
+
+            const result = await showModal({
+                icon: 'warning',
+                title: 'Remove Stakeholder?',
+                html: `Are you sure you want to remove <strong>${escapeHtml(stakeholder.name)}</strong> from the directory? This cannot be undone.`,
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#475569'
+            });
+
+            if (!result.isConfirmed) return;
+
+            stakeholderDirectory.splice(index, 1);
+            persistStakeholderDirectory();
+            renderStakeholderDirectory();
+            document.getElementById('stakeholder-status').innerText = 'Stakeholder removed.';
         }
 
         function escapeHtml(value) {
